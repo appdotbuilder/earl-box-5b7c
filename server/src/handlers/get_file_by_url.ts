@@ -1,16 +1,20 @@
 
+import { db } from '../db';
+import { filesTable } from '../db/schema';
 import { type GetFileByUrlInput, type File } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const getFileByUrl = async (input: GetFileByUrlInput): Promise<File | null> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is to retrieve file metadata by unique URL from database.
+  try {
+    const result = await db.select()
+      .from(filesTable)
+      .where(eq(filesTable.unique_url, input.unique_url))
+      .limit(1)
+      .execute();
     
-    // const file = await db.select()
-    //   .from(filesTable)
-    //   .where(eq(filesTable.unique_url, input.unique_url))
-    //   .limit(1);
-    
-    // return file[0] || null;
-    
-    return null; // Placeholder return
+    return result[0] || null;
+  } catch (error) {
+    console.error('File retrieval by URL failed:', error);
+    throw error;
+  }
 };
